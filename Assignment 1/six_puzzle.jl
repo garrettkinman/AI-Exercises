@@ -1,6 +1,14 @@
 # imports
 
 
+# State represents a given configuration of the board
+struct State
+    # empty_slot is so we don't have to search each time for it
+    # board maps positions ("TL", "TC", "TR", "BL", "BC", "BR") to tile number
+    board::Dict{String, Int}
+    empty_slot::String
+end
+
 # SearchNode represents a node in the search tree
 struct SearchNode
     state_id::Int
