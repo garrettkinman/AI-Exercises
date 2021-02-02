@@ -4,18 +4,17 @@
 # State represents a given configuration of the board
 struct State
     # empty_slot is so we don't have to search each time for it
-    # board maps positions ("TL", "TC", "TR", "BL", "BC", "BR") to tile number
-    board::Dict{String, Int}
-    empty_slot::String
+    board::AbstractMatrix
+    empty_slot::Tuple{Integer, Integer}
 end
 
 # SearchNode represents a node in the search tree
 struct SearchNode
-    state_id::Int
-    state::AbstractMatrix
+    state_id::Integer
+    state::State
     parent::SearchNode
-    cost_so_far::Int
-    current_depth::Int
+    cost_so_far::Integer
+    current_depth::Integer
 end
 
 # SearchTree represents the current state of a search tree
