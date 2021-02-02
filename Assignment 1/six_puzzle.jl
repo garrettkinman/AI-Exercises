@@ -1,5 +1,8 @@
 # imports
 
+# ~~~~~~~~~~~~~~~~~
+# type declarations
+# ~~~~~~~~~~~~~~~~~
 
 # State represents a given configuration of the board
 struct State
@@ -33,6 +36,28 @@ end
 mutable struct Queue
     head::QueueItem
     tail::QueueItem
+end
+
+# ~~~~~~~~~~~~~~~~~~~~~
+# function declarations
+# ~~~~~~~~~~~~~~~~~~~~~
+
+# Checks equality of two instances of State
+function isequal(s1::State, s2::State)
+    return (isequal(s1.board, s2.board) && isequal(s1.empty_slot, s2.empty_slot))
+end
+
+# Adds an item to a Queue
+function enqueue!(queue::Queue, item::QueueItem)
+    queue.tail.next = item
+    queue.tail = item
+end
+
+# Removes an item from a Queue and returns it
+function dequeue!(queue::Queue)::QueueItem
+    item = queue.head
+    queue.head = queue.head.next
+    return item
 end
 
 # breadth-first search
