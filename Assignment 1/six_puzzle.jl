@@ -30,6 +30,12 @@ struct State
     end
 end
 
+# Operation represents the result of a possible operation in a given state
+struct Operation
+    result_state::State
+    tile_moved::Int
+end
+
 # SearchNode represents a node in the search tree
 struct SearchNode
     state::State
@@ -100,6 +106,38 @@ function dequeue!(queue::Queue)::QueueItem
     queue.head = queue.head.next
     queue.length -= 1
     return item
+end
+
+# Returns all potential successor states to a given state, as well as the number of the tile moved
+function successor_states(state::State)::Set{Operation}
+    i, j = state.empty_slot
+
+    # find all the potential new empty slots
+    potential_empties = []
+    if (i, j) == (1, 1)
+        potential_empties = [(2, 1), (1, 2)]
+    elseif (i, j) == (1, 2)
+        potential_empties = [(1, 1), (2, 2), (1, 3)]
+    elseif (i, j) == (1, 3)
+        potential_empties = [(1, 2), (2, 3)]
+    elseif (i, j) == (2, 1)
+        potential_empties = [(1, 1), (2, 2)]
+    elseif (i, j) == (2, 2)
+        potential_empties = [(2, 1), (1, 2), (2, 3)]
+    elseif (i, j) == (2, 3)
+        potential_empties = [(2, 2), (1, 3)]
+    end
+
+    states = []
+    for (i_new, j_new) ∈ potential_empties
+        board = copy(state.board)
+        board[i, j] = state.board[i_new, j_new]
+        board[i_new, j_new] = state.board[i, j]
+        tile_moved = board[i, j]
+        append!(states, [Operation(State(board), tile_moved)])
+    end
+
+    return Set(states)
 end
 
 # ~~~~~~~~~~~~~~~~~~~~
