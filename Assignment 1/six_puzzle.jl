@@ -1,5 +1,13 @@
 # imports
 
+
+# ~~~~~~~~~~~~~~~~
+# global constants
+# ~~~~~~~~~~~~~~~~
+
+const INITIAL_STATE = [1 4 2; 5 3 nothing]
+const GOAL_STATE = [nothing 1 2; 5 4 3]
+
 # ~~~~~~~~~~~~~~~~~
 # type declarations
 # ~~~~~~~~~~~~~~~~~
@@ -94,8 +102,10 @@ function dequeue!(queue::Queue)::QueueItem
     return item
 end
 
+# ~~~~~~~~~~~~~~~~~~~~
 # breadth-first search
-# TODO: queue type
+# ~~~~~~~~~~~~~~~~~~~~
+
 #=
 1. Initialize SearchTree
 2. While SearchTree.current.state != SearchTree.goal:
@@ -106,7 +116,13 @@ end
     3. SearchTree.current = dequeue!(Queue).node
 3. Follow pointers back to parent node for full path
 =#
+bfs_tree = SearchTree(INITIAL_STATE, GOAL_STATE)
+bfs_queue = Queue()
+enqueue!(bfs_queue, QueueItem(bfs_tree.current))
 
+while bfs_tree.current.state != bfs_tree.goal
+    # TODO
+end
 
 # uniform-cost search
 
