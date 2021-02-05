@@ -1,5 +1,5 @@
 # imports
-
+import Base: ==
 
 # ~~~~~~~~~~~~~~~~
 # global constants
@@ -42,6 +42,8 @@ struct SearchNode
     parent::Union{SearchNode,Nothing}
     cost_so_far::Int
     current_depth::Int
+
+    # constructor builds state from a board config, handles null and non-null parents (since root of tree will have null parent)
     function SearchNode(board::Matrix, parent::Union{SearchNode,Nothing}, cost_so_far::Int, current_depth::Int)
         return new(State(board), parent, cost_so_far, current_depth)
     end
@@ -59,7 +61,7 @@ end
 # QueueItem represents an item in a queue
 mutable struct QueueItem
     node::SearchNode
-    next::Union{SearchNode,Nothing}
+    next::Union{QueueItem,Nothing}
 
     # constructor sets next to null
     function QueueItem(node::SearchNode)
@@ -84,7 +86,7 @@ end
 # ~~~~~~~~~~~~~~~~~~~~~
 
 # Checks equality of two instances of State
-function isequal(s1::State, s2::State)
+function ==(s1::State, s2::State)
     return (s1.board == s2.board) && (s1.empty_slot == s2.empty_slot)
 end
 
@@ -157,9 +159,18 @@ end
 bfs_tree = SearchTree(INITIAL_STATE, GOAL_STATE)
 bfs_queue = Queue()
 enqueue!(bfs_queue, QueueItem(bfs_tree.current))
+bfs_visited = [bfs_tree.current.state]
 
 while bfs_tree.current.state != bfs_tree.goal
-    # TODO
+    successors = successor_states(bfs_tree.current.state)
+
+    # remove all the visited states, enqueue the unvisited
+    filter!(s -> ∉(s, bfs_visited), successors)
+    for successor ∈ successors
+        # using unit cost; increment the depth
+        node = SearchNode(successor.result_state.board, bfs_tree.current, bfs_tree.current.cost_so_far + 1, bfs_tree.current.current_depth + 1)
+        enqueue!(bfs_queue, QueueItem(node))
+    end
 end
 
 # uniform-cost search
