@@ -7,23 +7,39 @@
 # State represents a given configuration of the board
 struct State
     # empty_slot is so we don't have to search each time for it
-    board::AbstractMatrix
-    empty_slot::Tuple{Integer, Integer}
+    board::Matrix
+    empty_slot::Tuple{Int,Int}
+
+    # constructor that sets the value of empty_slot based on the board
+    function State(board::Matrix)
+        for i ∈ 1:2
+            for j ∈ 1:3
+                if board[i,j] == nothing
+                    return new(board, (i,j))
+                end
+            end
+        end
+    end
 end
 
 # SearchNode represents a node in the search tree
 struct SearchNode
-    state_id::Integer
     state::State
-    parent::SearchNode
-    cost_so_far::Integer
-    current_depth::Integer
+    parent::Union{SearchNode,Nothing}
+    cost_so_far::Int
+    current_depth::Int
+    function SearchNode(board::Matrix, parent::Union{SearchNode,Nothing}, cost_so_far::Int, current_depth::Int)
+        return new(State(board), parent, cost_so_far, current_depth)
+    end
 end
 
 # SearchTree represents the current state of a search tree
 mutable struct SearchTree
     current::SearchNode
-    goal::AbstractMatrix
+    goal::Matrix
+    function SearchTree(start::Matrix, goal::Matrix)
+        return new(SearchNode(start, nothing, 0, 0), goal)
+    end
 end
 
 # QueueItem represents an item in a queue
@@ -44,7 +60,7 @@ end
 
 # Checks equality of two instances of State
 function isequal(s1::State, s2::State)
-    return (isequal(s1.board, s2.board) && isequal(s1.empty_slot, s2.empty_slot))
+    return (isequal(s1.board, s2.board) && s1.empty_slot == s2.empty_slot))
 end
 
 # Adds an item to a Queue
