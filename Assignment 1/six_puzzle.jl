@@ -169,15 +169,22 @@ while bfs_tree.current.state != bfs_tree.goal
     bfs_tree.current = dequeue!(bfs_queue).node
 end
 
+# TODO: show solution path
+
+# ~~~~~~~~~~~~~~~~~~~
 # uniform-cost search
+# ~~~~~~~~~~~~~~~~~~~
 
 
 
-
+# ~~~~~~~~~~~~~~~~~~
 # depth-first search
+# ~~~~~~~~~~~~~~~~~~
+
 # TODO: stack type
 
 
 
-
+# ~~~~~~~~~~~~~~~~~~~
 # iterative deepening
+# ~~~~~~~~~~~~~~~~~~~
