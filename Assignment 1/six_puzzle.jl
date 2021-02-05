@@ -83,12 +83,14 @@ function enqueue!(queue::Queue, item::QueueItem)
         queue.tail.next = item
         queue.tail = item
     end
+    queue.length += 1
 end
 
 # Removes an item from a Queue and returns it
 function dequeue!(queue::Queue)::QueueItem
     item = queue.head
     queue.head = queue.head.next
+    queue.length -= 1
     return item
 end
 
