@@ -45,13 +45,24 @@ end
 # QueueItem represents an item in a queue
 mutable struct QueueItem
     node::SearchNode
-    next::SearchNode
+    next::Union{SearchNode,Nothing}
+
+    # constructor sets next to null
+    function QueueItem(node::SearchNode)
+        return new(node, nothing)
+    end
 end
 
 # Queue represents a queue
 mutable struct Queue
-    head::QueueItem
-    tail::QueueItem
+    head::Union{QueueItem,Nothing}
+    tail::Union{QueueItem,Nothing}
+    length::Int
+
+    # constructor creates an empty queue
+    function Queue()
+        return new(nothing, nothing, 0)
+    end
 end
 
 # ~~~~~~~~~~~~~~~~~~~~~
@@ -60,13 +71,18 @@ end
 
 # Checks equality of two instances of State
 function isequal(s1::State, s2::State)
-    return (isequal(s1.board, s2.board) && s1.empty_slot == s2.empty_slot))
+    return (s1.board == s2.board) && (s1.empty_slot == s2.empty_slot)
 end
 
 # Adds an item to a Queue
 function enqueue!(queue::Queue, item::QueueItem)
-    queue.tail.next = item
-    queue.tail = item
+    if queue.length == 0
+        queue.head = item
+        queue.tail = item
+    else
+        queue.tail.next = item
+        queue.tail = item
+    end
 end
 
 # Removes an item from a Queue and returns it
