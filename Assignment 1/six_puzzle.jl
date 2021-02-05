@@ -52,9 +52,11 @@ end
 # SearchTree represents the current state of a search tree
 mutable struct SearchTree
     current::SearchNode
-    goal::Matrix
+    goal::State
+
+    # constructor initializes with a node at root of tree, hence null parent and zero cost and depth
     function SearchTree(start::Matrix, goal::Matrix)
-        return new(SearchNode(start, nothing, 0, 0), goal)
+        return new(SearchNode(start, nothing, 0, 0), State(goal))
     end
 end
 
@@ -146,22 +148,15 @@ end
 # breadth-first search
 # ~~~~~~~~~~~~~~~~~~~~
 
-#=
-1. Initialize SearchTree
-2. While SearchTree.current.state != SearchTree.goal:
-    1. Determine all possible successor states
-    2. For each successor state:
-        1. If unvisited, add to Queue
-        2. Else, continue
-    3. SearchTree.current = dequeue!(Queue).node
-3. Follow pointers back to parent node for full path
-=#
+# initialize tree, queue, and visited list
 bfs_tree = SearchTree(INITIAL_STATE, GOAL_STATE)
 bfs_queue = Queue()
 enqueue!(bfs_queue, QueueItem(bfs_tree.current))
-bfs_visited = [bfs_tree.current.state]
+bfs_visited = []
 
+# perform BFS algorithm
 while bfs_tree.current.state != bfs_tree.goal
+    append!(bfs_visited, [bfs_tree.current.state])
     successors = successor_states(bfs_tree.current.state)
 
     # remove all the visited states, enqueue the unvisited
@@ -171,6 +166,7 @@ while bfs_tree.current.state != bfs_tree.goal
         node = SearchNode(successor.result_state.board, bfs_tree.current, bfs_tree.current.cost_so_far + 1, bfs_tree.current.current_depth + 1)
         enqueue!(bfs_queue, QueueItem(node))
     end
+    bfs_tree.current = dequeue!(bfs_queue).node
 end
 
 # uniform-cost search
