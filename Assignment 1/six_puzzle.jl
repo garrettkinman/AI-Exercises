@@ -113,7 +113,7 @@ function dequeue!(queue::Queue)::QueueItem
 end
 
 # Returns all potential successor states to a given state, as well as the number of the tile moved
-function successor_states(state::State)::Set{Operation}
+function successor_states(state::State)::Vector{Operation}
     i, j = state.empty_slot
 
     # find all the potential new empty slots
@@ -141,7 +141,7 @@ function successor_states(state::State)::Set{Operation}
         append!(states, [Operation(State(board), tile_moved)])
     end
 
-    return Set(states)
+    return states
 end
 
 # ~~~~~~~~~~~~~~~~~~~~
@@ -187,7 +187,9 @@ while ucs_tree.current.state != ucs_tree.goal
 
     # remove all the visited states, enqueue the unvisited
     filter!(s -> ∉(s, ucs_visited), successors)
-    # TODO: prioritize low tile numbers
+
+    # prioritize the successor states that move the lower number tile
+    sort!(successors, by = s -> s.tile_moved)
     for successor ∈ successors
         # using unit cost; increment the depth
         node = SearchNode(successor.result_state.board, ucs_tree.current, ucs_tree.current.cost_so_far + 1, ucs_tree.current.current_depth + 1)
