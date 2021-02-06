@@ -161,6 +161,7 @@ while bfs_tree.current.state != bfs_tree.goal
 
     # remove all the visited states, enqueue the unvisited
     filter!(s -> ∉(s, bfs_visited), successors)
+    # TODO: prioritize low tile numbers
     for successor ∈ successors
         # using unit cost; increment the depth
         node = SearchNode(successor.result_state.board, bfs_tree.current, bfs_tree.current.cost_so_far + 1, bfs_tree.current.current_depth + 1)
@@ -169,13 +170,31 @@ while bfs_tree.current.state != bfs_tree.goal
     bfs_tree.current = dequeue!(bfs_queue).node
 end
 
-# TODO: show solution path
-
 # ~~~~~~~~~~~~~~~~~~~
 # uniform-cost search
 # ~~~~~~~~~~~~~~~~~~~
 
+# initialize tree, queue, and visited list
+ucs_tree = SearchTree(INITIAL_STATE, GOAL_STATE)
+ucs_queue = Queue()
+enqueue!(ucs_queue, QueueItem(ucs_tree.current))
+ucs_visited = []
 
+# perform UCS algorithm
+while ucs_tree.current.state != ucs_tree.goal
+    append!(ucs_visited, [ucs_tree.current.state])
+    successors = successor_states(ucs_tree.current.state)
+
+    # remove all the visited states, enqueue the unvisited
+    filter!(s -> ∉(s, ucs_visited), successors)
+    # TODO: prioritize low tile numbers
+    for successor ∈ successors
+        # using unit cost; increment the depth
+        node = SearchNode(successor.result_state.board, ucs_tree.current, ucs_tree.current.cost_so_far + 1, ucs_tree.current.current_depth + 1)
+        enqueue!(ucs_queue, QueueItem(node))
+    end
+    ucs_tree.current = dequeue!(ucs_queue).node
+end
 
 # ~~~~~~~~~~~~~~~~~~
 # depth-first search
