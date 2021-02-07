@@ -151,7 +151,6 @@ end
 # initialize tree, queue, and visited list
 bfs_tree = SearchTree(INITIAL_STATE, GOAL_STATE)
 bfs_queue = Queue()
-enqueue!(bfs_queue, QueueItem(bfs_tree.current))
 bfs_visited = []
 
 # perform BFS algorithm
@@ -160,7 +159,7 @@ while bfs_tree.current.state != bfs_tree.goal
     successors = successor_states(bfs_tree.current.state)
 
     # remove all the visited states, enqueue the unvisited
-    filter!(s -> ∉(s, bfs_visited), successors)
+    filter!(s -> ∉(s.result_state, bfs_visited), successors)
     # TODO: prioritize low tile numbers
     for successor ∈ successors
         # using unit cost; increment the depth
@@ -177,7 +176,6 @@ end
 # initialize tree, queue, and visited list
 ucs_tree = SearchTree(INITIAL_STATE, GOAL_STATE)
 ucs_queue = Queue()
-enqueue!(ucs_queue, QueueItem(ucs_tree.current))
 ucs_visited = []
 
 # perform UCS algorithm
@@ -186,7 +184,7 @@ while ucs_tree.current.state != ucs_tree.goal
     successors = successor_states(ucs_tree.current.state)
 
     # remove all the visited states, enqueue the unvisited
-    filter!(s -> ∉(s, ucs_visited), successors)
+    filter!(s -> ∉(s.result_state, ucs_visited), successors)
 
     # prioritize the successor states that move the lower number tile
     sort!(successors, by = s -> s.tile_moved)
@@ -202,9 +200,29 @@ end
 # depth-first search
 # ~~~~~~~~~~~~~~~~~~
 
-# TODO: stack type
+# initialize tree, stack, and visited list
+dfs_tree = SearchTree(INITIAL_STATE, GOAL_STATE)
+dfs_stack = []
 
+dfs_visited = []
 
+# perform DFS algorithm
+while dfs_tree.current.state != dfs_tree.goal
+    append!(dfs_visited, [dfs_tree.current.state])
+    successors = successor_states(dfs_tree.current.state)
+
+    # remove all the visited states, enqueue the unvisited
+    filter!(s -> ∉(s.result_state, dfs_visited), successors)
+    # prioritize the successor states that move the lower number tile
+    sort!(successors, by = s -> s.tile_moved, rev=true)
+
+    for successor ∈ successors
+        # using unit cost; increment the depth
+        node = SearchNode(successor.result_state.board, dfs_tree.current, dfs_tree.current.cost_so_far + 1, dfs_tree.current.current_depth + 1)
+        push!(dfs_stack, node)
+    end
+    dfs_tree.current = pop!(dfs_stack)
+end
 
 # ~~~~~~~~~~~~~~~~~~~
 # iterative deepening
