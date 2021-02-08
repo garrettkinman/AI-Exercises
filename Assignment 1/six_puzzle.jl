@@ -227,3 +227,43 @@ end
 # ~~~~~~~~~~~~~~~~~~~
 # iterative deepening
 # ~~~~~~~~~~~~~~~~~~~
+
+ids_tree = SearchTree(INITIAL_STATE, GOAL_STATE)
+ids_stack = []
+ids_visited = []
+
+# 6! = 720 possible states, so upper limit on depth
+for depth ∈ 1:720
+    # reinitialize for each depth
+    global ids_tree = SearchTree(INITIAL_STATE, GOAL_STATE)
+    global ids_stack = []
+    global ids_visited = []
+
+    # perform depth-limited search for specified depth
+    while ids_tree.current.state != ids_tree.goal
+        append!(ids_visited, [ids_tree.current.state])
+        successors = successor_states(ids_tree.current.state)
+
+        # remove all the visited states, enqueue the unvisited
+        filter!(s -> ∉(s.result_state, ids_visited), successors)
+        # prioritize the successor states that move the lower number tile
+        sort!(successors, by = s -> s.tile_moved, rev=true)
+
+        for successor ∈ successors
+            # using unit cost; increment the depth, but only allow to limited depth
+            node = SearchNode(successor.result_state.board, ids_tree.current, ids_tree.current.cost_so_far + 1, ids_tree.current.current_depth + 1)
+            if node.current_depth <= depth
+                push!(ids_stack, node)
+            end
+        end
+
+        # try to pop stack, if still nodes to visit
+        if isempty(ids_stack)
+            break
+        end
+        ids_tree.current = pop!(ids_stack)
+    end
+    if ids_tree.current.state == ids_tree.goal
+        break
+    end
+end
