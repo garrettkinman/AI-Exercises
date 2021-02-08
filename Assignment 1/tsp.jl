@@ -1,3 +1,9 @@
+# ~~~~~~~
+# imports
+# ~~~~~~~
+
+using Statistics
+
 # ~~~~~~~~~~~~~~~~~~~
 # struct declarations
 # ~~~~~~~~~~~~~~~~~~~
@@ -21,6 +27,17 @@ struct TSP
             end
         end
         return new(num_cities, cities, distances)
+    end
+end
+
+struct StatsResult
+    μ::Float64
+    min::Float64
+    max::Float64
+    σ::Float64
+
+    function StatsResult(v::Vector{Float64})
+        return new(mean(v), minimum(v), maximum(v), std(v))
     end
 end
 
