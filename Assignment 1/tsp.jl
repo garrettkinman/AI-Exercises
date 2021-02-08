@@ -67,3 +67,20 @@ function brute_force(tsp::TSP, tours::Vector{Vector{Int64}})
     end
     return min
 end
+
+# ~~~~~~~~~~~~~~~~~~~~~
+# brute-force solutions
+# ~~~~~~~~~~~~~~~~~~~~~
+
+# all possible tours for 7 cities
+seven_tours = collect(permutations([1, 2, 3, 4, 5, 6, 7]))
+# generate 100 random TSPs of size 7
+seven_TSPs = TSP.(fill(7, 100))
+# initialize list of optimal tour costs to zeros
+seven_optimals = zeros(100)
+
+# collect stats on optimal tours of all 100 TSPs
+for i ∈ 1:100
+    seven_optimals[i] = brute_force(seven_TSPs[i], seven_tours)
+end
+seven_results = StatsResult(seven_optimals)
