@@ -4,6 +4,7 @@
 
 using Statistics
 using Combinatorics
+using Pipe
 
 # ~~~~~~~~~~~~~~~~~~~
 # struct declarations
@@ -51,7 +52,7 @@ function evaluate_tour(tsp::TSP, tour::Vector{Int64})::Float64
     cost = 0.0
     # first city is starting point, so no cost
     for i ∈ 2:length(tour)
-        cost += tsp.distances[i - 1, i]
+        cost += tsp.distances[tour[i - 1], tour[i]]
     end
     return cost
 end
@@ -80,6 +81,7 @@ function generate_rand_tour(n::Int64)::Vector{Int64}
     end
     return tour
 end
+
 # ~~~~~~~~~~~~~~~~~~~~~
 # brute-force solutions
 # ~~~~~~~~~~~~~~~~~~~~~
@@ -100,3 +102,16 @@ seven_results = StatsResult(seven_optimals)
 # ~~~~~~~~~~~~
 # random tours
 # ~~~~~~~~~~~~
+
+# initialize list of random tour costs to zeros
+seven_randoms = zeros(100)
+
+# collect stats on random tours of all 100 TSPs
+num_rand_opt = 0
+for i ∈ 1:100
+    seven_randoms[i] = @pipe generate_rand_tour(7) |> evaluate_tour(seven_TSPs[i], _)
+    if seven_randoms[i] == seven_optimals[i]
+        num_rand_opt += 1
+    end
+end
+seven_rand_results = StatsResult(seven_randoms)
