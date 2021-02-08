@@ -68,6 +68,18 @@ function brute_force(tsp::TSP, tours::Vector{Vector{Int64}})
     return min
 end
 
+function generate_rand_tour(n::Int64)::Vector{Int64}
+    cities = Set(1:n)
+    tour = fill(0, n)
+
+    # for each stage of tour, randomly select next city, and remove it from set of available cities
+    for i ∈ 1:n
+        city = rand(cities)
+        tour[i] = city
+        setdiff!(cities, city)
+    end
+    return tour
+end
 # ~~~~~~~~~~~~~~~~~~~~~
 # brute-force solutions
 # ~~~~~~~~~~~~~~~~~~~~~
@@ -84,3 +96,7 @@ for i ∈ 1:100
     seven_optimals[i] = brute_force(seven_TSPs[i], seven_tours)
 end
 seven_results = StatsResult(seven_optimals)
+
+# ~~~~~~~~~~~~
+# random tours
+# ~~~~~~~~~~~~
