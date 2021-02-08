@@ -3,6 +3,7 @@
 # ~~~~~~~
 
 using Statistics
+using Combinatorics
 
 # ~~~~~~~~~~~~~~~~~~~
 # struct declarations
@@ -30,6 +31,7 @@ struct TSP
     end
 end
 
+
 struct StatsResult
     μ::Float64
     min::Float64
@@ -44,3 +46,24 @@ end
 # ~~~~~~~~~~~~~~~~~~~~~
 # function declarations
 # ~~~~~~~~~~~~~~~~~~~~~
+
+function evaluate_tour(tsp::TSP, tour::Vector{Int64})::Float64
+    cost = 0.0
+    # first city is starting point, so no cost
+    for i ∈ 2:length(tour)
+        cost += tsp.distances[i - 1, i]
+    end
+    return cost
+end
+
+function brute_force(tsp::TSP, tours::Vector{Vector{Int64}})
+    # initialize to max possible cost
+    min = √(2) * tsp.num_cities
+
+    # find minimum-cost tour
+    for tour ∈ tours
+        cost = evaluate_tour(tsp, tour)
+        min = cost < min ? cost : min
+    end
+    return min
+end
