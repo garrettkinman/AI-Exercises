@@ -158,3 +158,22 @@ for i ∈ 1:100
     end
 end
 seven_hillclimb_results = StatsResult(seven_hillclimbs)
+
+# ~~~~~~~~~~
+# 100 cities
+# ~~~~~~~~~~
+
+# generate 100 random TSPs of size 100
+hundred_TSPs = TSP.(fill(100, 100))
+# initialize list of random tour costs to zeros
+hundred_randoms = zeros(100)
+# initialize list of hill-climbed tour costs to zeros
+hundred_hillclimbs = zeros(100)
+
+# collect stats on random tours of all 100 TSPs
+for i ∈ 1:100
+    hundred_randoms[i] = @pipe generate_rand_tour(100) |> evaluate_tour(hundred_TSPs[i], _)
+    hundred_hillclimbs[i] = hill_climb(hundred_TSPs[i])
+end
+hundred_rand_results = StatsResult(hundred_randoms)
+hundred_hillclimb_results = StatsResult(hundred_hillclimbs)
