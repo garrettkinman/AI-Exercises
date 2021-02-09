@@ -82,6 +82,32 @@ function generate_rand_tour(n::Int64)::Vector{Int64}
     return tour
 end
 
+function swap(tour::Vector{Int64}, nodes::Vector{Int64})::Vector{Int64}
+    new_tour = copy(tour)
+    new_tour[nodes[1]] = tour[nodes[2]]
+    new_tour[nodes[2]] = tour[nodes[1]]
+    return new_tour
+end
+
+function hill_climb(tsp::TSP)::Float64
+    # generate a random tour, determine all possible swaps
+    tour = generate_rand_tour(tsp.num_cities)
+    swaps = collect(combinations(1:tsp.num_cities, 2))
+
+    while true
+        # find all neighbors and their costs
+        neighbors = map(s -> swap(tour, s), swaps)
+        neighbor_costs = map(n -> evaluate_tour(tsp, n), neighbors)
+
+        cost = evaluate_tour(tsp, tour)
+        if minimum(neighbor_costs) > cost
+            return cost
+        else
+            tour = neighbors[argmin(neighbor_costs)]
+        end
+    end
+end
+
 # ~~~~~~~~~~~~~~~~~~~~~
 # brute-force solutions
 # ~~~~~~~~~~~~~~~~~~~~~
@@ -115,3 +141,20 @@ for i ∈ 1:100
     end
 end
 seven_rand_results = StatsResult(seven_randoms)
+
+# ~~~~~~~~~~~~~
+# hill-climbing
+# ~~~~~~~~~~~~~
+
+# initialize list of hill-climbed tour costs to zeros
+seven_hillclimbs = zeros(100)
+
+# collect stats on hill-climbed tours of all 100 TSPs
+num_hillclimb_opt = 0
+for i ∈ 1:100
+    seven_hillclimbs[i] = hill_climb(seven_TSPs[i])
+    if seven_hillclimbs[i] == seven_optimals[i]
+        global num_hillclimb_opt += 1
+    end
+end
+seven_hillclimb_results = StatsResult(seven_hillclimbs)
